@@ -75,6 +75,7 @@ export default function BookingPage() {
       body: {
         client_name: form.name,
         client_email: form.email,
+        client_phone: form.phone,
         service_name: selectedService.name,
         date: format(selectedDate, 'dd/MM/yyyy'),
         start_time: selectedSlot.start,

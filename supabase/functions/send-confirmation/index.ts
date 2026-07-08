@@ -13,16 +13,17 @@ serve(async (req) => {
   }
 
   try {
-    const { client_name, client_email, service_name, date, start_time, end_time } = await req.json();
+    const { client_name, client_email, client_phone, service_name, date, start_time, end_time } = await req.json();
 
-    const res = await fetch("https://api.resend.com/emails", {
+    // Email στον πελάτη
+    await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Lakata Cuts <onboarding@resend.dev>",
+        from: "Lakata Cuts <noreply@lakatacuts.com>",
         to: [client_email],
         subject: "✂️ Επιβεβαίωση Ραντεβού - Lakata Cuts",
         html: `
@@ -48,15 +49,39 @@ serve(async (req) => {
                   <span style="color: #fbbf24; font-weight: bold;">${start_time} - ${end_time}</span>
                 </div>
               </div>
-              <p style="color: #a1a1aa; font-size: 14px;">Σε περίπτωση που θέλεις να ακυρώσεις, επικοινώνησε μαζί μας στο lakata.cuts στο Instagram. Ή στο +357 96 306807 (Κύπρος) / +30 695 1009786 (Ελλάδα).</p>
+              <p style="color: #a1a1aa; font-size: 14px;">Σε περίπτωση που θέλεις να ακυρώσεις, επικοινώνησε μαζί μας στο lakata.cuts στο Instagram. Ή στο +357 96 306807 (Κύπρος) / +30 695 1009786 (Ελλάδα).</p>
             </div>
           </div>
         `,
       }),
     });
 
-    const data = await res.json();
-    return new Response(JSON.stringify(data), {
+    // Email στον Μιχαήλ
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "Lakata Cuts <noreply@lakatacuts.com>",
+        to: ["lakatacuts@gmail.com"],
+        subject: "📅 Νέο Ραντεβού - Lakata Cuts",
+        html: `
+          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+            <h2 style="color: #d97706;">📅 Νέο Ραντεβού</h2>
+            <p><strong>Πελάτης:</strong> ${client_name}</p>
+            <p><strong>Email:</strong> ${client_email}</p>
+            <p><strong>Τηλέφωνο:</strong> ${client_phone ?? 'Δεν δόθηκε'}</p>
+            <p><strong>Υπηρεσία:</strong> ${service_name}</p>
+            <p><strong>Ημερομηνία:</strong> ${date}</p>
+            <p><strong>Ώρα:</strong> ${start_time} - ${end_time}</p>
+          </div>
+        `,
+      }),
+    });
+
+    return new Response(JSON.stringify({ success: true }), {
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
