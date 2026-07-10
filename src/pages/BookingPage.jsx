@@ -110,7 +110,7 @@ export default function BookingPage() {
           <p className="text-amber-500 text-sm font-semibold tracking-[0.3em] uppercase mb-3">Barbershop</p>
           <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-2">Lakata</h1>
           <h1 className="text-5xl md:text-7xl font-black tracking-tight text-amber-500 mb-6">Cuts</h1>
-          <p className="text-zinc-400 text-lg mb-8 max-w-sm mx-auto">Επαγγελματικό κούρεμα & φροντίδα γένιων</p>
+          <p className="text-zinc-400 text-lg mb-8 max-w-sm mx-auto">Επαγγελματικό κούρεμα & φροντίδα γενιών</p>
           <button
             onClick={() => bookingRef.current?.scrollIntoView({ behavior: 'smooth' })}
             className="bg-amber-500 hover:bg-amber-400 text-black font-bold px-8 py-3 rounded-full text-lg transition-all"
@@ -243,8 +243,8 @@ export default function BookingPage() {
         {/* Gallery */}
             {photos.length > 0 && (
         <div className="px-6 py-16 max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-2">Ικανοποιημένοι πελάτες</h2>
-          <p className="text-zinc-400 text-center text-sm mb-8">Κάποια από τα αποτελέσματά μας</p>
+          <h2 className="text-2xl font-bold text-center mb-2">Gallery</h2>
+          <p className="text-zinc-400 text-center text-sm mb-8">Haircuts</p>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {photos.map(photo => (
               <div
