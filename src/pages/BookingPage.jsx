@@ -4,6 +4,8 @@ import { DayPicker } from 'react-day-picker'
 import { format, addMinutes, setHours, setMinutes, isBefore, isAfter } from 'date-fns'
 import 'react-day-picker/dist/style.css'
 import { Turnstile } from '@marsidev/react-turnstile'
+import { translations } from '../i18n'
+
 
 const WORK_START = 10
 const WORK_END = 20
@@ -42,6 +44,8 @@ export default function BookingPage() {
   const [lightbox, setLightbox] = useState(null)
   const [captchaToken, setCaptchaToken] = useState(null)
   const bookingRef = useRef(null)
+  const [lang, setLang] = useState('el')
+  const t = translations[lang]
 
   useEffect(() => {
     supabase.from('services').select('*').then(({ data }) => setServices(data || []))
@@ -103,10 +107,10 @@ export default function BookingPage() {
       <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
         <div className="text-center px-6 max-w-sm">
           <div className="text-6xl mb-4">✂️</div>
-          <h2 className="text-3xl font-bold mb-2">Το ραντεβού σου κλείστηκε!</h2>
-          <p className="text-zinc-400 mt-2 mb-8">Θα λάβεις email επιβεβαίωσης σύντομα.</p>
+          <h2 className="text-3xl font-bold mb-2">{t.success_title}</h2>
+          <p className="text-zinc-400 mt-2 mb-8">{t.succcess_subtitle}</p>
           <div className="space-y-3 mb-8">
-            <p className="text-xs text-zinc-500 uppercase tracking-wider">Πρόσθεσε στο ημερολόγιό σου</p>
+            <p className="text-xs text-zinc-500 uppercase tracking-wider">{t.add_to_calendar}</p>
             <a href={googleUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full bg-zinc-800 hover:bg-zinc-700 text-white py-3 rounded-lg transition-all">
               <span>📅</span> Google Calendar
             </a>
@@ -126,7 +130,7 @@ export default function BookingPage() {
             }}
             className="text-sm text-amber-400 hover:text-amber-300"
           >
-            ← Νέο ραντεβού
+            ← {t.new_appointment}
           </button>
         </div>
       </div>
@@ -141,14 +145,28 @@ export default function BookingPage() {
         <div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,#d97706_0px,#d97706_1px,transparent_1px,transparent_12px)]" />
         <div className="relative z-10">
           <p className="text-amber-500 text-sm font-semibold tracking-[0.3em] uppercase mb-3">Barbershop</p>
+          <div className="absolute top-4 right-4 flex gap-2">
+    <button
+        onClick={() => setLang('el')}
+        className={`text-xs px-3 py-1 rounded-full font-semibold transition-all ${lang === 'el' ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}
+    >
+    ΕΛ
+  </button>
+  <button
+    onClick={() => setLang('en')}
+    className={`text-xs px-3 py-1 rounded-full font-semibold transition-all ${lang === 'en' ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}
+  >
+    EN
+  </button>
+</div>
           <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-2">Lakata</h1>
           <h1 className="text-5xl md:text-7xl font-black tracking-tight text-amber-500 mb-6">Cuts</h1>
-          <p className="text-zinc-400 text-lg mb-8 max-w-sm mx-auto">Επαγγελματικό κούρεμα & φροντίδα γένιων</p>
+          <p className="text-zinc-400 text-lg mb-8 max-w-sm mx-auto">{t.hero_subtitle}</p>
           <button
             onClick={() => bookingRef.current?.scrollIntoView({ behavior: 'smooth' })}
             className="bg-amber-500 hover:bg-amber-400 text-black font-bold px-8 py-3 rounded-full text-lg transition-all"
           >
-            Κλείσε Ραντεβού
+            {t.book_cta}
           </button>
         </div>
       </div>
@@ -160,7 +178,7 @@ export default function BookingPage() {
             <div key={s.id} className="text-center">
               <div className="text-amber-400 font-bold text-lg">{s.price}€</div>
               <div className="text-white text-sm font-medium">{s.name}</div>
-              <div className="text-zinc-500 text-xs">{s.duration_minutes} λεπτά</div>
+              <div className="text-zinc-500 text-xs">{s.duration_minutes} {t.minutes}</div>
             </div>
           ))}
         </div>
@@ -182,13 +200,13 @@ export default function BookingPage() {
       {/* Booking */}
       <div ref={bookingRef} className="bg-zinc-900 border-t border-zinc-800 px-6 py-16">
         <div className="max-w-lg mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-2">Κλείσε Ραντεβού</h2>
-          <p className="text-zinc-400 text-center text-sm mb-10">Επίλεξε υπηρεσία, ημερομηνία και ώρα</p>
+          <h2 className="text-2xl font-bold text-center mb-2">{t.booking_title}</h2>
+          <p className="text-zinc-400 text-center text-sm mb-10">{t.booking_subtitle}</p>
 
           <div className="space-y-8">
             {/* Service */}
             <div>
-              <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Υπηρεσία</h3>
+              <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">{t.service}</h3>
               <div className="space-y-2">
                 {services.map(s => (
                   <button key={s.id}
@@ -196,7 +214,7 @@ export default function BookingPage() {
                     className={`w-full text-left px-4 py-3 rounded-lg border transition-all ${selectedService?.id === s.id ? 'border-amber-500 bg-amber-500/10 text-amber-400' : 'border-zinc-800 bg-zinc-950 hover:border-zinc-600'}`}
                   >
                     <div className="font-medium">{s.name}</div>
-                    <div className="text-sm text-zinc-400">{s.duration_minutes} λεπτά · {s.price}€</div>
+                    <div className="text-sm text-zinc-400">{s.duration_minutes} {t.minutes} · {s.price}€</div>
                   </button>
                 ))}
               </div>
@@ -205,7 +223,7 @@ export default function BookingPage() {
             {/* Date */}
             {step >= 2 && selectedService && (
               <div>
-                <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Ημερομηνία</h3>
+                <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">{t.date}</h3>
                 <div className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 flex justify-center">
                   <DayPicker
                     mode="single"
@@ -220,9 +238,9 @@ export default function BookingPage() {
             {/* Time */}
             {step >= 3 && selectedDate && (
               <div>
-                <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Ώρα</h3>
+                <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">{t.time}</h3>
                 {slots.length === 0
-                  ? <p className="text-zinc-400 text-sm">Δεν υπάρχουν διαθέσιμες ώρες για αυτή την ημέρα.</p>
+                  ? <p className="text-zinc-400 text-sm">{t.no_slots}</p>
                   : <div className="grid grid-cols-3 gap-2">
                     {slots.map(slot => (
                       <button key={slot.start}
@@ -240,15 +258,15 @@ export default function BookingPage() {
             {/* Details */}
             {step >= 4 && selectedSlot && (
               <div>
-                <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Στοιχεία</h3>
+                <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">{t.details}</h3>
                 <div className="space-y-3">
-                  <input type="text" placeholder="Ονοματεπώνυμο" value={form.name}
+                  <input type="text" placeholder={t.name_placeholder} value={form.name}
                     onChange={e => setForm({ ...form, name: e.target.value })}
                     className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500" />
                   <input type="email" placeholder="Email" value={form.email}
                     onChange={e => setForm({ ...form, email: e.target.value })}
                     className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500" />
-                  <input type="tel" placeholder="Τηλέφωνο" value={form.phone}
+                  <input type="tel" placeholder={t.phone_placeholder} value={form.phone}
                     onChange={e => setForm({ ...form, phone: e.target.value })}
                     className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500" />
                 </div>
@@ -258,11 +276,11 @@ export default function BookingPage() {
             {/* Summary */}
             {step >= 4 && selectedSlot && form.name && form.email && (
               <div className="border border-zinc-800 rounded-lg p-4 space-y-2">
-                <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Σύνοψη</h3>
-                <div className="flex justify-between text-sm"><span className="text-zinc-400">Υπηρεσία</span><span>{selectedService.name}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-zinc-400">Ημερομηνία</span><span>{format(selectedDate, 'dd/MM/yyyy')}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-zinc-400">Ώρα</span><span>{selectedSlot.start} – {selectedSlot.end}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-zinc-400">Τιμή</span><span className="text-amber-400 font-medium">{selectedService.price}€</span></div>
+                <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">{t.summary}</h3>
+                <div className="flex justify-between text-sm"><span className="text-zinc-400">{t.service}</span><span>{selectedService.name}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-zinc-400">{t.date}</span><span>{format(selectedDate, 'dd/MM/yyyy')}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-zinc-400">{t.time}</span><span>{selectedSlot.start} – {selectedSlot.end}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-zinc-400">{t.price}</span><span className="text-amber-400 font-medium">{selectedService.price}€</span></div>
                 <Turnstile
                     siteKey="0x4AAAAAADz8D70cBbjco79X"
                     onSuccess={(token) => setCaptchaToken(token)}
@@ -273,7 +291,7 @@ export default function BookingPage() {
                     onClick={handleBook} 
                     disabled={loading || !captchaToken}
                   className="w-full mt-4 bg-amber-500 hover:bg-amber-400 text-black font-bold py-3 rounded-lg transition-all disabled:opacity-50">
-                  {loading ? 'Γίνεται κράτηση...' : 'Κλείσε Ραντεβού'}
+                  {loading ? t.booking_loading : t.book_button}
                 </button>
               </div>
             )}
@@ -284,8 +302,8 @@ export default function BookingPage() {
         {/* Gallery */}
             {photos.length > 0 && (
         <div className="px-6 py-16 max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-2">Gallery</h2>
-          <p className="text-zinc-400 text-center text-sm mb-8">Haircuts</p>
+          <h2 className="text-2xl font-bold text-center mb-2">{t.gallery_title}</h2>
+          <p className="text-zinc-400 text-center text-sm mb-8">{t.gallery_subtitle}</p>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {photos.map(photo => (
               <div
