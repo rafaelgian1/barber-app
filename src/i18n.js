@@ -1,6 +1,6 @@
 export const translations = {
   el: {
-    hero_subtitle: 'Επαγγελματικό κούρεμα & φροντίδα γένιων',
+    hero_subtitle: 'Επαγγελματικό κούρεμα & φροντίδα γενιών',
     book_cta: 'Κλείσε Ραντεβού',
     gallery_title: 'Gallery',
     gallery_subtitle: 'Κουρέματα',

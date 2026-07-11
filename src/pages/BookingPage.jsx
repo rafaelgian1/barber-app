@@ -82,10 +82,11 @@ export default function BookingPage() {
         client_name: form.name,
         client_email: form.email,
         client_phone: form.phone,
-        service_name: selectedService.name,
+        service_name: lang === 'en' ? selectedService.name_en : selectedService.name,
         date: format(selectedDate, 'dd/MM/yyyy'),
         start_time: selectedSlot.start,
         end_time: selectedSlot.end,
+        lang: lang
       }
     })
     setSuccess(true)
@@ -177,7 +178,7 @@ export default function BookingPage() {
           {services.map(s => (
             <div key={s.id} className="text-center">
               <div className="text-amber-400 font-bold text-lg">{s.price}€</div>
-              <div className="text-white text-sm font-medium">{s.name}</div>
+              <div className="text-white text-sm font-medium">{lang === 'en' ? s.name_en : s.name}</div>
               <div className="text-zinc-500 text-xs">{s.duration_minutes} {t.minutes}</div>
             </div>
           ))}
@@ -213,7 +214,7 @@ export default function BookingPage() {
                     onClick={() => { setSelectedService(s); setStep(2); setSelectedDate(null); setSelectedSlot(null) }}
                     className={`w-full text-left px-4 py-3 rounded-lg border transition-all ${selectedService?.id === s.id ? 'border-amber-500 bg-amber-500/10 text-amber-400' : 'border-zinc-800 bg-zinc-950 hover:border-zinc-600'}`}
                   >
-                    <div className="font-medium">{s.name}</div>
+                    <div className="font-medium">{lang === 'en' ? s.name_en : s.name}</div>
                     <div className="text-sm text-zinc-400">{s.duration_minutes} {t.minutes} · {s.price}€</div>
                   </button>
                 ))}
@@ -277,7 +278,7 @@ export default function BookingPage() {
             {step >= 4 && selectedSlot && form.name && form.email && (
               <div className="border border-zinc-800 rounded-lg p-4 space-y-2">
                 <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">{t.summary}</h3>
-                <div className="flex justify-between text-sm"><span className="text-zinc-400">{t.service}</span><span>{selectedService.name}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-zinc-400">{t.service}</span><span>{lang === 'en' ? selectedService.name_en : selectedService.name}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-zinc-400">{t.date}</span><span>{format(selectedDate, 'dd/MM/yyyy')}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-zinc-400">{t.time}</span><span>{selectedSlot.start} – {selectedSlot.end}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-zinc-400">{t.price}</span><span className="text-amber-400 font-medium">{selectedService.price}€</span></div>

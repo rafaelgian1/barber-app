@@ -13,7 +13,19 @@ serve(async (req) => {
   }
 
   try {
-    const { client_name, client_email, client_phone, service_name, date, start_time, end_time } = await req.json();
+    const { client_name, client_email, client_phone, service_name, date, start_time, end_time, lang } = await req.json();
+
+    const isEn = lang === 'en'
+    const subject = isEn ? '✂️ Appointment Confirmation - Lakata Cuts' : '✂️ Επιβεβαίωση Ραντεβού - Lakata Cuts'
+    const greeting = isEn ? `Hi <strong style="color: white;">${client_name}</strong>,` : `Γεια σου <strong style="color: white;">${client_name}</strong>,`
+    const confirmed = isEn ? 'Your appointment has been confirmed!' : 'Το ραντεβού σου επιβεβαιώθηκε!'
+    const bookedMsg = isEn ? 'Your appointment was successfully booked.' : 'Το ραντεβού σου κλείστηκε επιτυχώς.'
+    const serviceLabel = isEn ? 'Service' : 'Υπηρεσία'
+    const dateLabel = isEn ? 'Date' : 'Ημερομηνία'
+    const timeLabel = isEn ? 'Time' : 'Ώρα'
+    const cancelMsg = isEn
+      ? 'If you wish to cancel, contact us on Instagram @lakata.cuts or call +357 96 306807 (Cyprus) / +30 695 1009786 (Greece).'
+      : 'Σε περίπτωση που θέλεις να ακυρώσεις, επικοινώνησε μαζί μας στο lakata.cuts στο Instagram. Ή στο +357 96 306807 (Κύπρος) / +30 695 1009786 (Ελλάδα).'
 
     // Email στον πελάτη
     await fetch("https://api.resend.com/emails", {
@@ -25,31 +37,31 @@ serve(async (req) => {
       body: JSON.stringify({
         from: "Lakata Cuts <noreply@lakatacuts.com>",
         to: [client_email],
-        subject: "✂️ Επιβεβαίωση Ραντεβού - Lakata Cuts",
+        subject: subject,
         html: `
           <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; background: #18181b; color: white; border-radius: 12px; overflow: hidden;">
             <div style="background: #d97706; padding: 24px; text-align: center;">
               <h1 style="margin: 0; font-size: 28px; color: black;">✂️ Lakata Cuts</h1>
             </div>
             <div style="padding: 32px;">
-              <h2 style="color: #fbbf24; margin-top: 0;">Το ραντεβού σου επιβεβαιώθηκε!</h2>
-              <p style="color: #a1a1aa;">Γεια σου <strong style="color: white;">${client_name}</strong>,</p>
-              <p style="color: #a1a1aa;">Το ραντεβού σου κλείστηκε επιτυχώς.</p>
+              <h2 style="color: #fbbf24; margin-top: 0;">${confirmed}</h2>
+              <p style="color: #a1a1aa;">${greeting}</p>
+              <p style="color: #a1a1aa;">${bookedMsg}</p>
               <div style="background: #27272a; border-radius: 8px; padding: 20px; margin: 24px 0;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                  <span style="color: #a1a1aa;">Υπηρεσία: </span>
+                  <span style="color: #a1a1aa;">${serviceLabel}: </span>
                   <span style="color: white; font-weight: bold;">${service_name}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                  <span style="color: #a1a1aa;">Ημερομηνία: </span>
+                  <span style="color: #a1a1aa;">${dateLabel}: </span>
                   <span style="color: white; font-weight: bold;">${date}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between;">
-                  <span style="color: #a1a1aa;">Ώρα: </span>
+                  <span style="color: #a1a1aa;">${timeLabel}: </span>
                   <span style="color: #fbbf24; font-weight: bold;">${start_time} - ${end_time}</span>
                 </div>
               </div>
-              <p style="color: #a1a1aa; font-size: 14px;">Σε περίπτωση που θέλεις να ακυρώσεις, επικοινώνησε μαζί μας στο lakata.cuts στο Instagram. Ή στο +357 96 306807 (Κύπρος) / +30 695 1009786 (Ελλάδα).</p>
+              <p style="color: #a1a1aa; font-size: 14px;">${cancelMsg}</p>
             </div>
           </div>
         `,
