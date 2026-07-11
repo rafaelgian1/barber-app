@@ -10,12 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "^1.5.3",
     "@supabase/supabase-js": "^2.110.1",
+    "axios": "^1.18.1",
     "date-fns": "^4.4.0",
     "react": "^19.2.7",
     "react-day-picker": "^10.0.1",
     "react-dom": "^19.2.7",
-    "react-router-dom": "^7.18.1"
+    "react-google-recaptcha": "^3.1.0",
+    "react-router-dom": "^7.18.1",
+    "react-toastify": "^11.1.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.2",

@@ -3,9 +3,11 @@ import { supabase } from '../supabaseClient'
 import { DayPicker } from 'react-day-picker'
 import { format, addMinutes, setHours, setMinutes, isBefore, isAfter } from 'date-fns'
 import 'react-day-picker/dist/style.css'
+import { Turnstile } from '@marsidev/react-turnstile'
 
 const WORK_START = 10
 const WORK_END = 20
+const SUPABASE_URL = 'https://lwrklzearmzkxxophqja.supabase.co'
 
 function generateSlots(date, durationMinutes, bookedSlots) {
   const slots = []
@@ -25,7 +27,6 @@ function generateSlots(date, durationMinutes, bookedSlots) {
   return slots
 }
 
-const SUPABASE_URL = 'https://lwrklzearmzkxxophqja.supabase.co'
 
 export default function BookingPage() {
   const [services, setServices] = useState([])
@@ -39,6 +40,7 @@ export default function BookingPage() {
   const [success, setSuccess] = useState(false)
   const [photos, setPhotos] = useState([])
   const [lightbox, setLightbox] = useState(null)
+  const [captchaToken, setCaptchaToken] = useState(null)
   const bookingRef = useRef(null)
 
   useEffect(() => {
@@ -88,17 +90,48 @@ export default function BookingPage() {
   setLoading(false)
 }
 
-  if (success) return (
-    <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
-      <div className="text-center px-6">
-        <div className="text-6xl mb-4">✂️</div>
-        <h2 className="text-3xl font-bold mb-2">Το ραντεβού σου κλείστηκε!</h2>
-        <p className="text-zinc-400 mt-2">Θα λάβεις email επιβεβαίωσης σύντομα.</p>
-        <button onClick={() => { setSuccess(false); setStep(1); setSelectedService(null); setSelectedDate(null); setSelectedSlot(null); setForm({ name: '', email: '', phone: '' }) }}
-          className="mt-6 text-sm text-amber-400 hover:text-amber-300">← Νέο ραντεβού</button>
+  if (success) {
+    const eventTitle = encodeURIComponent(`✂️ Lakata Cuts - ${selectedService.name}`)
+    const eventDate = format(selectedDate, 'yyyyMMdd')
+    const startTime = selectedSlot.start.replace(':', '')
+    const endTime = selectedSlot.end.replace(':', '')
+    const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${eventDate}T${startTime}00/${eventDate}T${endTime}00&details=Lakata+Cuts+Barbershop`
+    const icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:✂️ Lakata Cuts - ${selectedService.name}\nDTSTART:${eventDate}T${startTime}00\nDTEND:${eventDate}T${endTime}00\nDESCRIPTION:Lakata Cuts Barbershop\nEND:VEVENT\nEND:VCALENDAR`
+    const icsUrl = `data:text/calendar;charset=utf8,${encodeURIComponent(icsContent)}`
+
+    return (
+      <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
+        <div className="text-center px-6 max-w-sm">
+          <div className="text-6xl mb-4">✂️</div>
+          <h2 className="text-3xl font-bold mb-2">Το ραντεβού σου κλείστηκε!</h2>
+          <p className="text-zinc-400 mt-2 mb-8">Θα λάβεις email επιβεβαίωσης σύντομα.</p>
+          <div className="space-y-3 mb-8">
+            <p className="text-xs text-zinc-500 uppercase tracking-wider">Πρόσθεσε στο ημερολόγιό σου</p>
+            <a href={googleUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full bg-zinc-800 hover:bg-zinc-700 text-white py-3 rounded-lg transition-all">
+              <span>📅</span> Google Calendar
+            </a>
+            <a href={icsUrl} download="lakata-cuts-appointment.ics" className="flex items-center justify-center gap-2 w-full bg-zinc-800 hover:bg-zinc-700 text-white py-3 rounded-lg transition-all">
+              <span>🍎</span> Apple Calendar
+            </a>
+          </div>
+          <button
+            onClick={() => {
+              setSuccess(false)
+              setStep(1)
+              setSelectedService(null)
+              setSelectedDate(null)
+              setSelectedSlot(null)
+              setForm({ name: '', email: '', phone: '' })
+              setCaptchaToken(null)
+            }}
+            className="text-sm text-amber-400 hover:text-amber-300"
+          >
+            ← Νέο ραντεβού
+          </button>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
@@ -110,7 +143,7 @@ export default function BookingPage() {
           <p className="text-amber-500 text-sm font-semibold tracking-[0.3em] uppercase mb-3">Barbershop</p>
           <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-2">Lakata</h1>
           <h1 className="text-5xl md:text-7xl font-black tracking-tight text-amber-500 mb-6">Cuts</h1>
-          <p className="text-zinc-400 text-lg mb-8 max-w-sm mx-auto">Επαγγελματικό κούρεμα & φροντίδα γενιών</p>
+          <p className="text-zinc-400 text-lg mb-8 max-w-sm mx-auto">Επαγγελματικό κούρεμα & φροντίδα γένιων</p>
           <button
             onClick={() => bookingRef.current?.scrollIntoView({ behavior: 'smooth' })}
             className="bg-amber-500 hover:bg-amber-400 text-black font-bold px-8 py-3 rounded-full text-lg transition-all"
@@ -230,7 +263,15 @@ export default function BookingPage() {
                 <div className="flex justify-between text-sm"><span className="text-zinc-400">Ημερομηνία</span><span>{format(selectedDate, 'dd/MM/yyyy')}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-zinc-400">Ώρα</span><span>{selectedSlot.start} – {selectedSlot.end}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-zinc-400">Τιμή</span><span className="text-amber-400 font-medium">{selectedService.price}€</span></div>
-                <button onClick={handleBook} disabled={loading}
+                <Turnstile
+                    siteKey="0x4AAAAAADz8D70cBbjco79X"
+                    onSuccess={(token) => setCaptchaToken(token)}
+                    onExpire={() => setCaptchaToken(null)}
+                    options={{ theme: 'dark' }}
+                />
+                <button 
+                    onClick={handleBook} 
+                    disabled={loading || !captchaToken}
                   className="w-full mt-4 bg-amber-500 hover:bg-amber-400 text-black font-bold py-3 rounded-lg transition-all disabled:opacity-50">
                   {loading ? 'Γίνεται κράτηση...' : 'Κλείσε Ραντεβού'}
                 </button>
