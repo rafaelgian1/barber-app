@@ -7,24 +7,35 @@ import { Turnstile } from '@marsidev/react-turnstile'
 import { translations } from '../i18n'
 
 
-const WORK_START = 10
-const WORK_END = 20
+const WORK_START_1 = 9
+const WORK_END_1 = 13
+const WORK_START_2 = 15
+const WORK_END_2 = 19
 const SUPABASE_URL = 'https://lwrklzearmzkxxophqja.supabase.co'
 
 function generateSlots(date, durationMinutes, bookedSlots) {
   const slots = []
   const now = new Date()
-  let current = setMinutes(setHours(new Date(date), WORK_START), 0)
-  const end = setMinutes(setHours(new Date(date), WORK_END), 0)
-  while (isBefore(current, end)) {
-    const slotEnd = addMinutes(current, durationMinutes)
-    if (isAfter(slotEnd, end)) break
-    const startStr = format(current, 'HH:mm')
-    const endStr = format(slotEnd, 'HH:mm')
-    const isBooked = bookedSlots.some(b => !(endStr <= b.start_time || startStr >= b.end_time))
-    const isPast = isBefore(current, now)
-    if (!isBooked && !isPast) slots.push({ start: startStr, end: endStr })
-    current = addMinutes(current, durationMinutes)
+
+  const periods = [
+    {start: WORK_START_1, end: WORK_END_1},
+    {start: WORK_START_2, end: WORK_END_2},
+  ]
+
+  for(const period of periods) {
+    let current = setMinutes(setHours(new Date(date), period.start), 0)
+    const end = setMinutes(setHours(new Date(date), period.end), 0)
+
+    while (isBefore(current, end)) {
+      const slotEnd = addMinutes(current, durationMinutes)
+      if (isAfter(slotEnd, end)) break
+      const startStr = format(current, 'HH:mm')
+      const endStr = format(slotEnd, 'HH:mm')
+      const isBooked = bookedSlots.some(b => !(endStr <= b.start_time || startStr >= b.end_time))
+      const isPast = isBefore(current, now)
+      if (!isBooked && !isPast) slots.push({start: startStr, end: endStr})
+      current = addMinutes(current, durationMinutes)
+    }
   }
   return slots
 }
@@ -109,7 +120,7 @@ export default function BookingPage() {
         <div className="text-center px-6 max-w-sm">
           <div className="text-6xl mb-4">✂️</div>
           <h2 className="text-3xl font-bold mb-2">{t.success_title}</h2>
-          <p className="text-zinc-400 mt-2 mb-8">{t.succcess_subtitle}</p>
+          <p className="text-zinc-400 mt-2 mb-8">{t.success_subtitle}</p>
           <div className="space-y-3 mb-8">
             <p className="text-xs text-zinc-500 uppercase tracking-wider">{t.add_to_calendar}</p>
             <a href={googleUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full bg-zinc-800 hover:bg-zinc-700 text-white py-3 rounded-lg transition-all">
