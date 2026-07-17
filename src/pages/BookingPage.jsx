@@ -337,7 +337,7 @@ export default function BookingPage() {
 <div className="border-t border-zinc-800 px-6 py-8 text-center">
   <p className="text-amber-500 font-bold text-lg mb-1">Lakata Cuts</p>
 
-    href="https://www.instagram.com/lakata.cuts"
+    <a href="https://www.instagram.com/lakata.cuts"
     target="_blank"
     rel="noopener noreferrer"
     className="inline-flex items-center gap-2 text-zinc-400 hover:text-amber-400 transition-colors text-sm mb-3"
@@ -349,5 +349,6 @@ export default function BookingPage() {
   </a>
   <p className="text-zinc-500 text-sm">© 2026</p>
 </div>
+    </div>
   )
 }
