@@ -70,12 +70,12 @@ export default function BookingPage() {
   }, [])
 
   useEffect(() => {
-    if (!selectedDate || !selectedService) return
-    const dateStr = format(selectedDate, 'yyyy-MM-dd')
-    supabase.from('appointments').select('start_time, end_time').eq('date', dateStr).then(({ data }) => {
-      setSlots(generateSlots(selectedDate, selectedService.duration_minutes, data || []))
-    })
-  }, [selectedDate, selectedService])
+  if (!selectedDate || !selectedService) return
+  const dateStr = format(selectedDate, 'yyyy-MM-dd')
+  supabase.rpc('get_booked_slots', { target_date: dateStr }).then(({ data }) => {
+    setSlots(generateSlots(selectedDate, selectedService.duration_minutes, data || []))
+  })
+}, [selectedDate, selectedService])
 
   async function handleBook() {
     setLoading(true)
