@@ -34,7 +34,7 @@ function generateSlots(date, durationMinutes, bookedSlots) {
       const isBooked = bookedSlots.some(b => !(endStr <= b.start_time || startStr >= b.end_time))
       const isPast = isBefore(current, now)
       if (!isBooked && !isPast) slots.push({start: startStr, end: endStr})
-      current = addMinutes(current, durationMinutes)
+      current = addMinutes(current, 15)
     }
   }
   return slots
